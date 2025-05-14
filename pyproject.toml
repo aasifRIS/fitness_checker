@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fitness-tracker"
+version = "0.1.0"
+description = ""
+authors = ["aasifRIS <aasif.j@rudhrainfosolutions.com>"]
+readme = "README.md"
+packages = [{include = "fitness_tracker", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+streamlit = "^1.45.1"
+pandas = "^2.2.3"
+matplotlib = "^3.10.3"
+python-dateutil = "^2.9.0.post0"
+schedule = "^1.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
