@@ -9,9 +9,9 @@ import schedule
 import threading
 import time
 
-# Hardcoded app-specific password
-REMINDER_EMAIL = "aasifdrive@gmail.com"  # Your reminder email
-EMAIL_PASSWORD = "vxvo zeix ndbp pckz"  # Your app-specific password here
+# App-specific email configuration
+REMINDER_EMAIL = "aasifdrive@gmail.com"
+EMAIL_PASSWORD = "vxvo zeix ndbp pckz"
 
 APP_TITLE = "💪Fitness Checker"
 DATA_FILE = Path("data/progress.json")
@@ -24,7 +24,7 @@ COMMON_EXERCISES = [
 
 st.set_page_config(page_title=APP_TITLE, layout="wide")
 
-# CSS styling for Streamlit
+# CSS styling
 st.markdown("""
     <style>
     html, body, [class*="css"] {
@@ -59,6 +59,7 @@ st.markdown("""
     }
     .calendar-cell.star { background-color: #ffe066 !important; }
     .calendar-cell.green { background-color: #b2f2bb !important; }
+    .calendar-cell.red { background-color: #ffa8a8 !important; }
     .calendar-cell.incomplete { background-color: #f0f0f0 !important; }
     </style>
 """, unsafe_allow_html=True)
@@ -87,7 +88,7 @@ def save_data(data):
 def send_email(subject, body, to_email):
     msg = MIMEText(body)
     msg["From"] = REMINDER_EMAIL
-    msg["To"] = to_email  # Send to the desired email
+    msg["To"] = to_email
     msg["Subject"] = subject
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
@@ -113,9 +114,10 @@ def generate_date_range(start, end):
 def render_calendar(start_date, end_date, log):
     st.markdown("### 📅 Challenge Calendar")
     for day in generate_date_range(start_date, end_date):
-        status = log.get(str(day), {}).get("status", "none")
-        symbol = {"green": "✅", "star": "🌟"}.get(status, "⬜")
-        css_class = status if status in ["green", "star"] else "incomplete"
+        day_str = str(day)
+        status = log.get(day_str, {}).get("status", "incomplete")
+        symbol = {"green": "✅", "star": "🌟", "red": "❌"}.get(status, "⬜")
+        css_class = status if status in ["green", "star", "red"] else "incomplete"
         st.markdown(f"<div class='calendar-cell {css_class}'>{day.day}<br>{symbol}</div>", unsafe_allow_html=True)
 
 def render_summary(log):
@@ -136,9 +138,8 @@ def render_summary(log):
 data = load_data()
 today = datetime.date.today()
 
-# Check if 'plan' exists in the loaded data
+# Set up challenge if not done
 if "plan" not in data:
-    # If 'plan' doesn't exist, ask the user to set up a challenge
     with st.form("setup_form"):
         st.subheader("💖 Set Your Fitness Challenge")
         start = st.date_input("Start Date", today)
@@ -157,23 +158,20 @@ if "plan" not in data:
                 exercises[ex] = target
         submitted = st.form_submit_button("💪 Start My Challenge")
         if submitted and start < end:
-            # Create the plan if not already set
             data = {"plan": {"start_date": str(start), "end_date": str(end), "exercises": exercises}, "log": {}}
             save_data(data)
             send_email("🎉 Challenge Started!", f"Hey Madhu Priya! Your challenge from {start} to {end} has started! 💖", "aasif013010@gmail.com")
             start_reminder_thread()
             st.success("Challenge created! Daily reminders set 🕖")
-
-    # Stop further execution if 'plan' does not exist
     st.stop()
 
-# Use Plan
+# Use existing plan
 plan = data["plan"]
 log = data.get("log", {})
 start_date = datetime.date.fromisoformat(plan["start_date"])
 end_date = datetime.date.fromisoformat(plan["end_date"])
 
-# Calendar
+# Calendar view
 render_calendar(start_date, end_date, log)
 
 # Log Today
@@ -192,7 +190,12 @@ if start_date <= today <= end_date:
             if val > target:
                 exceeded = True
         if st.button("✅ Clock Out"):
-            status = "star" if complete and exceeded else "green" if complete else "none"
+            if complete and exceeded:
+                status = "star"
+            elif complete:
+                status = "green"
+            else:
+                status = "red"
             log[today_str] = {"entries": user_input, "status": status}
             data["log"] = log
             save_data(data)
@@ -200,6 +203,10 @@ if start_date <= today <= end_date:
     else:
         st.info("You've already clocked out for today 💅")
 
-# Stats Button
+# Stats
 if st.button("📊 View My Stats Now"):
     render_summary(log)
+
+# 🔄 Refresh Button
+if st.button("🔄 Refresh Page"):
+    st.experimental_rerun()

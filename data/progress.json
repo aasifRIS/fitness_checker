@@ -1,0 +1,21 @@
+{
+  "plan": {
+    "start_date": "2025-05-14",
+    "end_date": "2025-05-15",
+    "exercises": {
+      "Lunges": 10,
+      "Burpees": 10,
+      "Jumping Jacks": 10
+    }
+  },
+  "log": {
+    "2025-05-14": {
+      "entries": {
+        "Lunges": 12,
+        "Burpees": 2,
+        "Jumping Jacks": 1
+      },
+      "status": "none"
+    }
+  }
+}
