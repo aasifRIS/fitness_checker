@@ -166,7 +166,7 @@ if "plan" not in data:
 
     # Add refresh button on form page
     if st.button("🔄 Refresh Page"):
-        st.experimental_rerun()
+        st.rerun()
 
     st.stop()
 
