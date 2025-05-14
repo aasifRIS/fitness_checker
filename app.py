@@ -163,6 +163,11 @@ if "plan" not in data:
             send_email("🎉 Challenge Started!", f"Hey Madhu Priya! Your challenge from {start} to {end} has started! 💖", "aasif013010@gmail.com")
             start_reminder_thread()
             st.success("Challenge created! Daily reminders set 🕖")
+
+    # Add refresh button on form page
+    if st.button("🔄 Refresh Page"):
+        st.experimental_rerun()
+
     st.stop()
 
 # Use existing plan
@@ -210,3 +215,12 @@ if st.button("📊 View My Stats Now"):
 # 🔄 Refresh Button
 if st.button("🔄 Refresh Page"):
     st.experimental_rerun()
+
+# 🗑️ Clear Challenge Data Button
+if st.button("🗑️ Clear Challenge Data"):
+    if DATA_FILE.exists():
+        DATA_FILE.unlink()
+        st.success("Challenge data cleared. Refreshing app...")
+        st.experimental_rerun()
+    else:
+        st.info("No challenge data to clear.")
