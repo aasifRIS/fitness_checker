@@ -13,7 +13,7 @@ import time
 REMINDER_EMAIL = "aasifdrive@gmail.com"  # Your reminder email
 EMAIL_PASSWORD = "vxvo zeix ndbp pckz"  # Your app-specific password here
 
-APP_TITLE = "💪 Madhu Priya's Fitness Checker"
+APP_TITLE = "💪Fitness Checker"
 DATA_FILE = Path("data/progress.json")
 
 COMMON_EXERCISES = [
